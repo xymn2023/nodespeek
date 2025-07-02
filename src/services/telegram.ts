@@ -603,31 +603,20 @@ ${userBindingStatus}
         .filter(k => k && k.trim().length > 0)
         .join(' ');
 
-      const keywordsStr = keywords ? `🎯 ${keywords}` : '';
-
-      const creator = matchedSub.creator ? `👤 ${matchedSub.creator}` : '';
-      const category = matchedSub.category ? `🗂️ ${this.getCategoryName(matchedSub.category)}` : '';
-
-      // 构建帖子链接
+      const keywordsStr = keywords ? `${keywords}` : '';
+      const creator = matchedSub.creator ? `${matchedSub.creator}` : '';
       const postUrl = `https://www.nodeseek.com/post-${post.post_id}-1`;
-
-      // 去除 post.title 会影响markdown链接的符号
       const title = post.title
         .replace(/\[/g, "「")
         .replace(/\]/g, "」")
         .replace(/\(/g, "（")
         .replace(/\)/g, "）");
+      const memo = post.memo || '';
 
-      const text = `
-**${keywordsStr} ${creator} ${category}**
-
-**[${title}](${postUrl})**
-      `;
+      const text = `标题: ${title}\n关键词: ${keywordsStr}\n作者: ${creator}\n链接: ${postUrl}\n\n摘要: ${memo}`;
 
       const success = await this.sendMessage(config.chat_id, text);
-      
       if (success) {
-        // 更新推送状态
         await this.dbService.updatePostPushStatus(
           post.post_id, 
           1, // 已推送
@@ -636,7 +625,6 @@ ${userBindingStatus}
         );
         return true;
       }
-      
       return false;
     } catch (error) {
       console.error('推送文章失败:', error);
