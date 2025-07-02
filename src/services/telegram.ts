@@ -627,7 +627,7 @@ ${userBindingStatus}
         .replace(/\)/g, "）");
       const memo = post.memo && post.memo.trim() ? post.memo : '';
 
-      const text = `标题: ${title}\n关键词: ${keywordsStr}\n作者: ${creator}\n链接: ${postUrl}\n\n${memo}`;
+      const text = `标题: ${title}\n关键词: ${keywordsStr}\n作者: ${creator}\n链接: ${postUrl}\n${memo ? '\n' + memo : ''}`;
 
       const success = await this.sendMessage(config.chat_id, text);
       if (success) {
