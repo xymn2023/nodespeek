@@ -604,7 +604,7 @@ ${userBindingStatus}
         .join(' ');
 
       const keywordsStr = keywords ? `${keywords}` : '';
-      const creator = matchedSub.creator ? `${matchedSub.creator}` : '';
+      const creator = post.creator ? `${post.creator}` : '';
       const postUrl = `https://www.nodeseek.com/post-${post.post_id}-1`;
       const title = post.title
         .replace(/\[/g, "「")
