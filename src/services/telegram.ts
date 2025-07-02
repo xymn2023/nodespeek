@@ -630,6 +630,7 @@ ${userBindingStatus}
       if (memo.length > maxLen) {
         memo = memo.slice(0, maxLen) + '...';
       }
+      // 外部只显示标题、关键词、作者、链接，正文内容（memo）只在预览区显示
       const text = `标题: ${title}\n关键词: ${keywordsStr}\n作者: ${creator}\n链接: ${postUrl}\n${memo}`;
 
       const success = await this.sendMessage(config.chat_id, text);
