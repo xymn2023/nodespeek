@@ -625,9 +625,12 @@ ${userBindingStatus}
         .replace(/\]/g, "」")
         .replace(/\(/g, "（")
         .replace(/\)/g, "）");
-      const memo = post.memo && post.memo.trim() ? post.memo : '';
-
-      const text = `标题: ${title}\n关键词: ${keywordsStr}\n作者: ${creator}\n链接: ${postUrl}\n${memo ? '\n' + memo : ''}`;
+      let memo = post.memo && post.memo.trim() ? post.memo.trim() : '暂无内容';
+      const maxLen = 200;
+      if (memo.length > maxLen) {
+        memo = memo.slice(0, maxLen) + '...';
+      }
+      const text = `标题: ${title}\n关键词: ${keywordsStr}\n作者: ${creator}\n链接: ${postUrl}\n${memo}`;
 
       const success = await this.sendMessage(config.chat_id, text);
       if (success) {
