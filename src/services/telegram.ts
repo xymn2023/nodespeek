@@ -422,6 +422,20 @@ export class TelegramService {
 
     const keywords = args.slice(0, 3); // 最多3个关键词
     
+    // 新增：获取所有已存在的关键词，判断去重
+    const allSubs = await this.dbService.getAllKeywordSubs();
+    const allKeywords = new Set<string>();
+    allSubs.forEach(sub => {
+      if (sub.keyword1) allKeywords.add(sub.keyword1);
+      if (sub.keyword2) allKeywords.add(sub.keyword2);
+      if (sub.keyword3) allKeywords.add(sub.keyword3);
+    });
+    const duplicate = keywords.find(k => allKeywords.has(k));
+    if (duplicate) {
+      await ctx.reply(`❌ 关键词"${duplicate}"已存在，不能重复添加。`);
+      return;
+    }
+
     try {
       const sub = await this.dbService.createKeywordSub({
         keyword1: keywords[0],
@@ -611,9 +625,9 @@ ${userBindingStatus}
         .replace(/\]/g, "」")
         .replace(/\(/g, "（")
         .replace(/\)/g, "）");
-      const memo = post.memo || '';
+      const memo = post.memo && post.memo.trim() ? post.memo : '';
 
-      const text = `标题: ${title}\n关键词: ${keywordsStr}\n作者: ${creator}\n链接: ${postUrl}\n\n摘要: ${memo}`;
+      const text = `标题: ${title}\n关键词: ${keywordsStr}\n作者: ${creator}\n链接: ${postUrl}\n\n${memo}`;
 
       const success = await this.sendMessage(config.chat_id, text);
       if (success) {
