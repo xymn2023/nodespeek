@@ -420,19 +420,21 @@ export class TelegramService {
       return;
     }
 
-    const keywords = args.slice(0, 3); // 最多3个关键词
-    
-    // 新增：获取所有已存在的关键词，判断去重
+    const keywords = args.slice(0, 3).filter(Boolean).map(k => k.trim()).filter(Boolean);
+    // 规范化：去除空、排序、转小写
+    const newKeySet = keywords.map(k => k.toLowerCase()).sort().join('|');
+
     const allSubs = await this.dbService.getAllKeywordSubs();
-    const allKeywords = new Set<string>();
-    allSubs.forEach(sub => {
-      if (sub.keyword1) allKeywords.add(sub.keyword1);
-      if (sub.keyword2) allKeywords.add(sub.keyword2);
-      if (sub.keyword3) allKeywords.add(sub.keyword3);
+    const exists = allSubs.some(sub => {
+      const subKeys = [sub.keyword1, sub.keyword2, sub.keyword3]
+        .filter(Boolean)
+        .map(k => k.trim().toLowerCase())
+        .sort()
+        .join('|');
+      return subKeys === newKeySet;
     });
-    const duplicate = keywords.find(k => allKeywords.has(k));
-    if (duplicate) {
-      await ctx.reply(`❌ 关键词"${duplicate}"已存在，不能重复添加。`);
+    if (exists) {
+      await ctx.reply(`❌ 该关键词组已存在，不能重复添加。`);
       return;
     }
 
